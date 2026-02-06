@@ -1,0 +1,37 @@
+`timescale 1ns / 1ps
+
+module pulse_stretcher (
+    input clk,
+    input rst,
+    input pulse_in,      // 1-cycle input pulse
+    output reg pulse_out // N-cycle output pulse
+);
+
+    parameter N = 5;     // stretch length
+    reg [7:0] count;     // simple counter (enough bits)
+
+    always @(posedge clk or posedge rst) begin
+        if (rst) begin
+            pulse_out <= 0;
+            count     <= 0;
+        end
+        else begin
+            // If 1-cycle pulse arrives, start stretching
+            if (pulse_in) begin
+                pulse_out <= 1;
+                count     <= N;
+            end
+            // Keep output high while counting
+            else if (count > 0) begin
+                pulse_out <= 1;
+                count     <= count - 1;
+            end
+            // Done stretching
+            else begin
+                pulse_out <= 0;
+            end
+        end
+    end
+
+endmodule
+
