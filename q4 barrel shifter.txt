@@ -1,0 +1,22 @@
+`timescale 1ns / 1ps
+
+
+
+module BarrelShifter #(parameter WIDTH=16)(
+    input [WIDTH-1:0]data_in,
+    input [$clog2(WIDTH)-1:0]shift_amt,
+    input [1:0]shift_type,
+    output reg [WIDTH-1:0]data_out
+    );
+    
+    always@(*)begin
+    case(shift_type)
+    2'b00:data_out= data_in<<shift_amt;
+    2'b01:data_out= data_in>>shift_amt;
+    2'b10:data_out= $signed(data_in)>>>shift_amt;
+    default:data_out= data_in;
+    endcase
+    end
+    
+    
+endmodule

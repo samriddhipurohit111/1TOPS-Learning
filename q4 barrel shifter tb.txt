@@ -1,0 +1,58 @@
+`timescale 1ns/1ps
+
+module tb_BarrelShifter;
+
+    // Testbench signals
+    reg  [15:0] data_in;
+    reg  [3:0]  shift_amt;     // clog2(16) = 4
+    reg  [1:0]  shift_type;
+    wire [15:0] data_out;
+
+    // DUT instantiation
+    BarrelShifter #(.WIDTH(16)) dut (
+        .data_in(data_in),
+        .shift_amt(shift_amt),
+        .shift_type(shift_type),
+        .data_out(data_out)
+    );
+
+    initial begin
+        $display("Time\tdata_in\t\tshift_amt\tshift_type\tdata_out");
+        $display("-------------------------------------------------------------");
+
+        // -------- Logical Left Shift --------
+        data_in    = 16'h00F3;   // 0000 0000 1111 0011
+        shift_type = 2'b00;
+
+        shift_amt = 1; #10;
+        shift_amt = 4; #10;
+        shift_amt = 8; #10;
+
+        // -------- Logical Right Shift --------
+        data_in    = 16'h0F30;   // 0000 1111 0011 0000
+        shift_type = 2'b01;
+
+        shift_amt = 1; #10;
+        shift_amt = 4; #10;
+        shift_amt = 8; #10;
+
+        // -------- Arithmetic Right Shift --------
+        data_in    = 16'hF030;   // negative number (MSB = 1)
+        shift_type = 2'b10;
+
+        shift_amt = 1; #10;
+        shift_amt = 4; #10;
+        shift_amt = 8; #10;
+
+        // -------- Default / No Shift --------
+        shift_type = 2'b11;
+        shift_amt  = 3; #10;
+
+        $finish;
+    end
+
+    // Monitor output
+    initial begin
+        $monitor("%0t\t%h\t\t%d\t\t%b\t\t%h",
+                 $time, data_in, shift_amt, shift_type, data_out);
+    end
