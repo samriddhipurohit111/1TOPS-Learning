@@ -1,0 +1,55 @@
+
+`timescale 1ns/1ps
+
+module tb_TwoFFSync;
+
+    reg clk_dst;
+    reg rst_dst;
+    reg async_in;
+    wire sync_out;
+
+    // DUT instantiation
+    TwoFFSync dut (
+        .clk_dst(clk_dst),
+        .rst_dst(rst_dst),
+        .async_in(async_in),
+        .sync_out(sync_out)
+    );
+
+    // Clock generation: 10 ns period
+    always #5 clk_dst = ~clk_dst;
+
+    initial begin
+        // Initialize signals
+        clk_dst  = 0;
+        rst_dst  = 1;
+        async_in = 0;
+
+        $display("Time\t clk rst async_in sync_out");
+        $display("--------------------------------");
+
+        // Hold reset for 2 clock cycles
+        #12;
+        rst_dst = 0;
+
+        // Change async_in at RANDOM times (not aligned to clk)
+        #7  async_in = 1;
+        #13 async_in = 0;
+        #9  async_in = 1;
+        #11 async_in = 0;
+
+        #20 async_in = 1;
+        #17 async_in = 0;
+
+        #30;
+
+        $finish;
+    end
+
+    // Monitor changes
+    initial begin
+        $monitor("%0t\t  %b   %b     %b        %b",
+                 $time, clk_dst, rst_dst, async_in, sync_out);
+    end
+
+endmodule
