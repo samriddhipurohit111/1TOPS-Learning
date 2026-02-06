@@ -1,0 +1,12 @@
+`timescale 1ns/1ps
+
+module bin2gray #(
+    parameter N = 8   // width of binary input
+)(
+    input  wire [N-1:0] bin,
+    output wire [N-1:0] gray
+);
+
+    assign gray = bin ^ (bin >> 1);
+
+endmodule
