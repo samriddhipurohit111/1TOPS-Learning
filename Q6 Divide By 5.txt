@@ -1,0 +1,41 @@
+module DivideBy5(
+    input   clk,
+    input   reset,
+    output  clk_div5
+);
+
+    reg [2:0] cntpos;
+    reg [2:0] cntneg;
+    reg clk_pos;
+    reg clk_neg;
+
+    // Positive edge counter
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            cntpos <= 3'd0;
+            clk_pos <= 1'b0;
+        end else if (cntpos == 3'd2) begin
+            cntpos <= 3'd0;
+            clk_pos <= ~clk_pos;
+        end else begin
+            cntpos <= cntpos + 1'b1;
+        end
+    end
+
+    // Negative edge counter
+    always @(negedge clk or posedge reset) begin
+        if (reset) begin
+            cntneg <= 3'd0;
+            clk_neg <= 1'b0;
+        end else if (cntneg == 3'd2) begin
+            cntneg <= 3'd0;
+            clk_neg <= ~clk_neg;
+        end else begin
+            cntneg <= cntneg + 1'b1;
+        end
+    end
+
+    // Combine both
+    assign clk_div5 = clk_pos | clk_neg;
+
+endmodule
