@@ -1,0 +1,29 @@
+module EQComparatorWithComparison #(parameter N = 8)(
+    input  [N-1:0] a,
+    input  [N-1:0] b,
+    output reg          equal,
+    output reg          greater,
+    output reg          lesser
+);
+
+    integer i;
+
+    always @(*) begin
+        // defaults
+        equal   = 1'b1;
+        greater = 1'b0;
+        lesser  = 1'b0;
+
+        // MSB to LSB comparison
+        for (i = N-1; i >= 0; i = i - 1) begin
+            if (equal && (a[i] != b[i])) begin
+                equal = 1'b0;
+                if (a[i]>b[i])
+                    greater = 1'b1;
+                else
+                    lesser  = 1'b1;
+            end
+        end
+    end
+
+endmodule

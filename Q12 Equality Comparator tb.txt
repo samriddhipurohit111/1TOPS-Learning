@@ -1,0 +1,59 @@
+`timescale 1ns/1ps
+
+module tb_EQComparatorWithComparison;
+
+    parameter N = 8;
+
+    reg  [N-1:0] a;
+    reg  [N-1:0] b;
+    wire equal;
+    wire greater;
+    wire lesser;
+
+    EQComparatorWithComparison #(N) dut (
+        .a(a),
+        .b(b),
+        .equal(equal),
+        .greater(greater),
+        .lesser(lesser)
+    );
+
+    // Safety check: should NEVER happen
+    always @(*) begin
+        if (greater && lesser) begin
+            $fatal("ERROR: greater and lesser both HIGH at time %0t", $time);
+        end
+    end
+
+    initial begin
+        $display("Time\t a\t\t b\t\t equal greater lesser");
+        $display("--------------------------------------------------");
+
+        a = 8'd25;  b = 8'd25;  #10;
+        $display("%0t\t %d\t %d\t %b\t   %b\t   %b", $time,a,b,equal,greater,lesser);
+
+        a = 8'd50;  b = 8'd30;  #10;
+        $display("%0t\t %d\t %d\t %b\t   %b\t   %b", $time,a,b,equal,greater,lesser);
+
+        a = 8'd15;  b = 8'd40;  #10;
+        $display("%0t\t %d\t %d\t %b\t   %b\t   %b", $time,a,b,equal,greater,lesser);
+
+        a = 8'd128; b = 8'd127; #10;
+        $display("%0t\t %d\t %d\t %b\t   %b\t   %b", $time,a,b,equal,greater,lesser);
+
+        a = 8'd0;   b = 8'd0;   #10;
+        $display("%0t\t %d\t %d\t %b\t   %b\t   %b", $time,a,b,equal,greater,lesser);
+
+        repeat (5) begin
+            a = $random;
+            b = $random;
+            #10;
+            $display("%0t\t %d\t %d\t %b\t   %b\t   %b",
+                     $time,a,b,equal,greater,lesser);
+        end
+
+        $finish;
+    end
+
+endmodule
+
