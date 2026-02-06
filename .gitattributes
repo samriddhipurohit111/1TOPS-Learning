@@ -1,2 +1,15 @@
+
+module OneCyclePulse(
+    input in,
+    input clk,
+    output reg prev_in,
+    output pulse
+    );
+    always@(posedge clk)begin
+    prev_in<=in;
+    end
+    
+    assign pulse=in&(~prev_in);
+endmodule
 # Auto detect text files and perform LF normalization
 * text=auto
