@@ -1,0 +1,27 @@
+`timescale 1ns / 1ps
+
+
+module handshakeMechanism(
+    input clk,
+    input reset,
+    input [31:0]data_in,
+    input valid_in,
+    output reg [31:0] data_out,
+    output reg valid,
+    input ready
+    );
+    always@ (posedge clk)begin 
+    if(reset)begin
+    valid<=1'b0;
+    end
+    else begin
+    if(valid_in&&!valid)begin 
+    data_out<=data_in;
+    valid<=1'b1;
+    end
+    else if(valid&&ready)begin
+    valid<=1'b0;
+    end
+    end
+    end
+endmodule

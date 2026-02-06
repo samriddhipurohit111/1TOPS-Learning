@@ -1,0 +1,77 @@
+`timescale 1ns/1ps
+
+module tb_handshakeMechanism;
+
+    // Testbench signals
+    reg         clk;
+    reg         reset;
+    reg [31:0]  data_in;
+    reg         valid_in;
+    reg         ready;
+
+    wire [31:0] data_out;
+    wire        valid;
+
+    // Instantiate DUT
+    handshakeMechanism dut (
+        .clk(clk),
+        .reset(reset),
+        .data_in(data_in),
+        .valid_in(valid_in),
+        .ready(ready),
+        .data_out(data_out),
+        .valid(valid)
+    );
+
+    // Clock generation: 10ns period
+    always #5 clk = ~clk;
+
+    initial begin
+        // Initial values
+        clk = 0;
+        reset = 1;
+        data_in = 32'd0;
+        valid_in = 0;
+        ready = 0;
+
+        // Hold reset
+        #10;
+        reset = 0;
+
+        // -------------------------
+        // Case 1: Send data, receiver NOT ready
+        // -------------------------
+        #10;
+        data_in = 32'hAAAA_1111;
+        valid_in = 1;
+        ready = 0;      // receiver busy
+
+        #20;
+        valid_in = 0;   // producer stops asserting valid_in
+
+        // -------------------------
+        // Case 2: Receiver becomes ready
+        // -------------------------
+        #20;
+        ready = 1;      // handshake should complete here
+
+        #10;
+        ready = 0;
+
+        // -------------------------
+        // Case 3: Send another data
+        // -------------------------
+        #20;
+        data_in = 32'hBBBB_2222;
+        valid_in = 1;
+        ready = 1;      // immediate transfer
+
+        #10;
+        valid_in = 0;
+
+        // Finish simulation
+        #50;
+        $finish;
+    end
+
+endmodule
