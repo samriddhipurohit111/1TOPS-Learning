@@ -1,0 +1,17 @@
+module onehot_to_binary #(parameter N = 8)(
+    input  wire [N-1:0] onehot,
+    output reg  [$clog2(N)-1:0] binary
+);
+
+    integer i;
+
+    always @(*) begin
+        binary = {($clog2(N)){1'b0}};  // default
+
+        for (i = 0; i < N; i = i + 1) begin
+            if (onehot[i])
+                binary = i[$clog2(N)-1:0];
+        end
+    end
+
+endmodule

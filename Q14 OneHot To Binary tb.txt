@@ -1,0 +1,51 @@
+`timescale 1ns/1ps
+
+module tb_onehot_to_binary;
+
+    parameter N = 8;
+    localparam BIN_W = $clog2(N);
+
+    reg  [N-1:0] onehot;
+    wire [BIN_W-1:0] binary;
+
+    // DUT instantiation
+    onehot_to_binary #(N) dut (
+        .onehot(onehot),
+        .binary(binary)
+    );
+
+    initial begin
+        $display("Time\t onehot\t\t binary");
+        $display("--------------------------------");
+
+        // All zero (no bit set)
+        onehot = 8'b0000_0000; #10;
+        $display("%0t\t %b\t %0d", $time, onehot, binary);
+
+        // Valid one-hot cases
+        onehot = 8'b0000_0001; #10;  // 0
+        $display("%0t\t %b\t %0d", $time, onehot, binary);
+
+        onehot = 8'b0000_0010; #10;  // 1
+        $display("%0t\t %b\t %0d", $time, onehot, binary);
+
+        onehot = 8'b0000_0100; #10;  // 2
+        $display("%0t\t %b\t %0d", $time, onehot, binary);
+
+        onehot = 8'b0001_0000; #10;  // 4
+        $display("%0t\t %b\t %0d", $time, onehot, binary);
+
+        onehot = 8'b1000_0000; #10;  // 7
+        $display("%0t\t %b\t %0d", $time, onehot, binary);
+
+        // Invalid cases (multiple bits set)
+        onehot = 8'b0001_0010; #10;
+        $display("%0t\t %b\t %0d  (last 1 wins)", $time, onehot, binary);
+
+        onehot = 8'b1010_0001; #10;
+        $display("%0t\t %b\t %0d  (last 1 wins)", $time, onehot, binary);
+
+        $finish;
+    end
+
+endmodule
