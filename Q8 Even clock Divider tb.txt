@@ -1,0 +1,36 @@
+`timescale 1ns / 1ps
+
+module tb_ClockDividerEven;
+
+    // Testbench signals
+    reg clk_in;
+    reg rst;
+    wire clk_out;
+
+    // Instantiate DUT (Device Under Test)
+    ClockDividerEven #(.DivideBy(4)) DUT (
+        .clk_in(clk_in),
+        .rst(rst),
+        .clk_out(clk_out)
+    );
+
+    // Clock generation: 10ns period (100 MHz)
+    always #5 clk_in = ~clk_in;
+
+    initial begin
+        // Initialize signals
+        clk_in = 0;
+        rst    = 1;
+
+        // Hold reset for some time
+        #20;
+        rst = 0;
+
+        // Run simulation long enough to observe clk_out
+        #200;
+
+        // End simulation
+        $stop;
+    end
+
+endmodule

@@ -1,0 +1,31 @@
+`timescale 1ns / 1ps
+
+
+
+module ClockDividerEven #(parameter DivideBy=4)(
+    input clk_in,
+    input rst,
+    output reg clk_out
+    );
+    localparam CountMax=DivideBy/2;
+    integer count;
+    always@(posedge clk_in)begin
+    if (rst)begin
+    count<=0;
+    clk_out<=1'b0;
+    end
+    else begin
+    if(count==CountMax-1)begin 
+    count<=0;
+    clk_out=~clk_out;
+    end
+    
+    else begin
+    count<=count+1;
+    end
+    end
+    
+    
+    end
+    
+endmodule
